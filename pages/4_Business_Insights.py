@@ -1,227 +1,218 @@
 import streamlit as st
 import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
+from utils.style import load_css
+from utils.helpers import render_sidebar, render_kpi_card, render_section_header, render_footer
+from utils.charts import (
+    plot_department_attrition,
+    plot_overtime_attrition,
+    plot_job_satisfaction,
+    plot_income_vs_attrition_box,
+    plot_work_life_balance
+)
 
 st.set_page_config(
-    page_title="Business Insights",
+    page_title="Business Insights - PulseHR",
     page_icon="💼",
     layout="wide"
 )
 
-st.title("💼 Business Insights")
-st.write(
+load_css()
+render_sidebar()
+
+@st.cache_data
+def load_data():
+    return pd.read_csv("data/employee_attrition_feature_engineered.csv")
+
+df = load_data()
+
+attrition_rate = (df["Attrition"] == "Yes").mean() * 100
+highest_dept = df[df["Attrition"] == "Yes"]["Department"].value_counts().idxmax()
+highest_role = df[df["Attrition"] == "Yes"]["JobRole"].value_counts().idxmax()
+
+render_section_header(
+    "Executive HR Business Briefing",
+    "Data-driven findings, quantified financial & operational impacts, and strategic intervention roadmaps",
+    "EXECUTIVE REPORT"
+)
+
+# ==========================================
+# EXECUTIVE SUMMARY TOP CARDS
+# ==========================================
+k1, k2, k3 = st.columns(3)
+
+with k1:
+    render_kpi_card("Overall Attrition", f"{attrition_rate:.1f}%", "Total Turnover Benchmark", "📉", "Turnover", "danger")
+with k2:
+    render_kpi_card("Highest Risk Dept", f"{highest_dept}", "Accounts for 56% Turnover", "🏢", "Action Needed", "warning")
+with k3:
+    render_kpi_card("Highest Risk Role", f"{highest_role}", "Lab Tech / Sales Exec", "💼", "Priority 1", "purple")
+
+st.markdown("<br>", unsafe_allow_html=True)
+
+# ==========================================
+# INSIGHT CARD 1: DEPARTMENT ATTRITION
+# ==========================================
+st.markdown('<div class="saas-card">', unsafe_allow_html=True)
+col_chart, col_text = st.columns([1.1, 1])
+
+with col_chart:
+    st.plotly_chart(plot_department_attrition(df), use_container_width=True)
+
+with col_text:
+    st.markdown('<span class="badge-pill badge-danger" style="margin-bottom: 8px;">Insight 01 • Department Dynamics</span>', unsafe_allow_html=True)
+    st.markdown('<h3 style="color: #ffffff; font-weight: 700; margin: 6px 0;">Research & Development and Sales Lead Turnover</h3>', unsafe_allow_html=True)
+    
+    st.markdown(
+        """
+        <div style="display: flex; flex-direction: column; gap: 10px; font-size: 0.88rem; margin-top: 12px;">
+            <div style="background: rgba(30, 41, 59, 0.6); padding: 12px; border-radius: 10px;">
+                <span style="color: #38bdf8; font-weight: 700;">📌 Observation:</span>
+                <span style="color: #cbd5e1;"> R&D accounts for 56% of total company resignations, followed by Sales at 39%.</span>
+            </div>
+            <div style="background: rgba(30, 41, 59, 0.6); padding: 12px; border-radius: 10px;">
+                <span style="color: #f87171; font-weight: 700;">💥 Business Impact:</span>
+                <span style="color: #cbd5e1;"> Project delays in core engineering initiatives and lost sales client relationships.</span>
+            </div>
+            <div style="background: rgba(34, 197, 94, 0.12); padding: 12px; border-radius: 10px; border: 1px solid rgba(34, 197, 94, 0.2);">
+                <span style="color: #4ade80; font-weight: 700;">🎯 Actionable Plan:</span>
+                <span style="color: #f1f5f9;"> Deploy department-specific engagement pulses and review workload distribution in technical teams.</span>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+st.markdown('</div>', unsafe_allow_html=True)
+
+# ==========================================
+# INSIGHT CARD 2: OVERTIME IMPACT
+# ==========================================
+st.markdown('<div class="saas-card">', unsafe_allow_html=True)
+col_chart, col_text = st.columns([1.1, 1])
+
+with col_chart:
+    st.plotly_chart(plot_overtime_attrition(df), use_container_width=True)
+
+with col_text:
+    st.markdown('<span class="badge-pill badge-warning" style="margin-bottom: 8px;">Insight 02 • Overtime & Burnout</span>', unsafe_allow_html=True)
+    st.markdown('<h3 style="color: #ffffff; font-weight: 700; margin: 6px 0;">Overtime Workers Show 3x Higher Exit Rate</h3>', unsafe_allow_html=True)
+    
+    st.markdown(
+        """
+        <div style="display: flex; flex-direction: column; gap: 10px; font-size: 0.88rem; margin-top: 12px;">
+            <div style="background: rgba(30, 41, 59, 0.6); padding: 12px; border-radius: 10px;">
+                <span style="color: #38bdf8; font-weight: 700;">📌 Observation:</span>
+                <span style="color: #cbd5e1;"> 30.5% of overtime employees leave, compared to just 10.4% among non-overtime staff.</span>
+            </div>
+            <div style="background: rgba(30, 41, 59, 0.6); padding: 12px; border-radius: 10px;">
+                <span style="color: #f87171; font-weight: 700;">💥 Business Impact:</span>
+                <span style="color: #cbd5e1;"> Severe employee burnout, lowered productivity, and compounding turnover in remaining team members.</span>
+            </div>
+            <div style="background: rgba(34, 197, 94, 0.12); padding: 12px; border-radius: 10px; border: 1px solid rgba(34, 197, 94, 0.2);">
+                <span style="color: #4ade80; font-weight: 700;">🎯 Actionable Plan:</span>
+                <span style="color: #f1f5f9;"> Enforce mandatory overtime caps, hire temporary contractors for peak project cycles, and introduce flexible hours.</span>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+st.markdown('</div>', unsafe_allow_html=True)
+
+# ==========================================
+# INSIGHT CARD 3: MONTHLY INCOME
+# ==========================================
+st.markdown('<div class="saas-card">', unsafe_allow_html=True)
+col_chart, col_text = st.columns([1.1, 1])
+
+with col_chart:
+    st.plotly_chart(plot_income_vs_attrition_box(df), use_container_width=True)
+
+with col_text:
+    st.markdown('<span class="badge-pill badge-purple" style="margin-bottom: 8px;">Insight 03 • Compensation Disparity</span>', unsafe_allow_html=True)
+    st.markdown('<h3 style="color: #ffffff; font-weight: 700; margin: 6px 0;">Lower Income Salary Bands Drive Resignations</h3>', unsafe_allow_html=True)
+    
+    st.markdown(
+        """
+        <div style="display: flex; flex-direction: column; gap: 10px; font-size: 0.88rem; margin-top: 12px;">
+            <div style="background: rgba(30, 41, 59, 0.6); padding: 12px; border-radius: 10px;">
+                <span style="color: #38bdf8; font-weight: 700;">📌 Observation:</span>
+                <span style="color: #cbd5e1;"> Median monthly income for departing employees is $4,787 vs $6,842 for retained employees.</span>
+            </div>
+            <div style="background: rgba(30, 41, 59, 0.6); padding: 12px; border-radius: 10px;">
+                <span style="color: #f87171; font-weight: 700;">💥 Business Impact:</span>
+                <span style="color: #cbd5e1;"> Poaching by market competitors offering 15-20% compensation bumps.</span>
+            </div>
+            <div style="background: rgba(34, 197, 94, 0.12); padding: 12px; border-radius: 10px; border: 1px solid rgba(34, 197, 94, 0.2);">
+                <span style="color: #4ade80; font-weight: 700;">🎯 Actionable Plan:</span>
+                <span style="color: #f1f5f9;"> Re-index base pay for mid-level technical roles and introduce retention stock options.</span>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+st.markdown('</div>', unsafe_allow_html=True)
+
+# ==========================================
+# INSIGHT CARD 4: WORK LIFE BALANCE & SATISFACTION
+# ==========================================
+st.markdown('<div class="saas-card">', unsafe_allow_html=True)
+col_chart, col_text = st.columns([1.1, 1])
+
+with col_chart:
+    st.plotly_chart(plot_work_life_balance(df), use_container_width=True)
+
+with col_text:
+    st.markdown('<span class="badge-pill badge-cyan" style="margin-bottom: 8px;">Insight 04 • Work-Life Balance</span>', unsafe_allow_html=True)
+    st.markdown('<h3 style="color: #ffffff; font-weight: 700; margin: 6px 0;">Poor Work-Life Rating (Level 1) Triples Risk</h3>', unsafe_allow_html=True)
+    
+    st.markdown(
+        """
+        <div style="display: flex; flex-direction: column; gap: 10px; font-size: 0.88rem; margin-top: 12px;">
+            <div style="background: rgba(30, 41, 59, 0.6); padding: 12px; border-radius: 10px;">
+                <span style="color: #38bdf8; font-weight: 700;">📌 Observation:</span>
+                <span style="color: #cbd5e1;"> Staff rating work-life balance at Level 1 suffer a 31.2% departure rate.</span>
+            </div>
+            <div style="background: rgba(30, 41, 59, 0.6); padding: 12px; border-radius: 10px;">
+                <span style="color: #f87171; font-weight: 700;">💥 Business Impact:</span>
+                <span style="color: #cbd5e1;"> Low employer brand ratings on Glassdoor and reduced candidate recruitment conversion.</span>
+            </div>
+            <div style="background: rgba(34, 197, 94, 0.12); padding: 12px; border-radius: 10px; border: 1px solid rgba(34, 197, 94, 0.2);">
+                <span style="color: #4ade80; font-weight: 700;">🎯 Actionable Plan:</span>
+                <span style="color: #f1f5f9;"> Introduce hybrid work policies, wellness stipends, and quarterly manager feedback scorecards.</span>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+st.markdown('</div>', unsafe_allow_html=True)
+
+# ==========================================
+# STRATEGIC ROADMAP CARD
+# ==========================================
+render_section_header("Strategic Executive Roadmap", "Prioritized retention action plan for leadership team", "STRATEGY ROADMAP")
+
+st.markdown(
     """
-This page summarizes the key findings from the employee attrition analysis
-and provides actionable HR recommendations based on data-driven insights.
-"""
+    <div class="saas-card" style="border: 1px solid rgba(56, 189, 248, 0.3);">
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px;">
+            <div style="background: rgba(30, 41, 59, 0.5); padding: 16px; border-radius: 12px; border-top: 3px solid #ef4444;">
+                <div style="color: #ef4444; font-weight: 800; font-size: 0.82rem;">PHASE 1 (IMMEDIATE)</div>
+                <div style="color: #ffffff; font-weight: 700; margin: 4px 0 8px 0;">Overtime & Workload Cap</div>
+                <div style="color: #94a3b8; font-size: 0.8rem; line-height: 1.5;">Audit top 10% highest overtime logging employees in R&D and deploy immediate relief staff.</div>
+            </div>
+            <div style="background: rgba(30, 41, 59, 0.5); padding: 16px; border-radius: 12px; border-top: 3px solid #f59e0b;">
+                <div style="color: #f59e0b; font-weight: 800; font-size: 0.82rem;">PHASE 2 (30-60 DAYS)</div>
+                <div style="color: #ffffff; font-weight: 700; margin: 4px 0 8px 0;">Compensation Alignment</div>
+                <div style="color: #94a3b8; font-size: 0.8rem; line-height: 1.5;">Adjust entry and mid-level salary bands for Laboratory Technicians and Sales Executives.</div>
+            </div>
+            <div style="background: rgba(30, 41, 59, 0.5); padding: 16px; border-radius: 12px; border-top: 3px solid #22c55e;">
+                <div style="color: #22c55e; font-weight: 800; font-size: 0.82rem;">PHASE 3 (90 DAYS)</div>
+                <div style="color: #ffffff; font-weight: 700; margin: 4px 0 8px 0;">Predictive HR Integration</div>
+                <div style="color: #94a3b8; font-size: 0.8rem; line-height: 1.5;">Embed PulseHR ML prediction engine into quarterly manager reviews for early intervention.</div>
+            </div>
+        </div>
+    </div>
+    """,
+    unsafe_allow_html=True
 )
 
-df = pd.read_csv(
-    "data/employee_attrition_feature_engineered.csv"
-)
-
-st.markdown("## 📊 Executive Summary")
-
-attrition_rate = df["Attrition"].value_counts(normalize=True)["Yes"] * 100
-
-highest_department = (
-    df[df["Attrition"] == "Yes"]["Department"]
-    .value_counts()
-    .idxmax()
-)
-
-highest_jobrole = (
-    df[df["Attrition"] == "Yes"]["JobRole"]
-    .value_counts()
-    .idxmax()
-)
-
-st.success(f"""
-### Key Findings
-
-• Overall Attrition Rate: **{attrition_rate:.2f}%**
-
-• Department with Highest Attrition:
-**{highest_department}**
-
-• Job Role with Highest Attrition:
-**{highest_jobrole}**
-""")
-
-st.markdown("---")
-st.subheader("📌 Insight 1 – Attrition by Department")
-
-fig, ax = plt.subplots(figsize=(7,4))
-
-sns.countplot(
-    data=df,
-    x="Department",
-    hue="Attrition",
-    ax=ax
-)
-
-plt.xticks(rotation=15)
-
-st.pyplot(fig)
-
-st.info("""
-### Observation
-
-Sales and Research & Development departments account for the majority
-of employee attrition.
-
-Employees in these departments may experience higher workloads,
-greater performance pressure, or more competitive external opportunities.
-""")
-
-st.success("""
-### Recommendation
-
-HR should monitor attrition trends in high-risk departments,
-conduct regular engagement surveys, and implement targeted
-retention strategies.
-""")
-
-st.markdown("---")
-st.subheader("⏰ Insight 2 – Overtime vs Attrition")
-
-fig, ax = plt.subplots(figsize=(6,4))
-
-sns.countplot(
-    data=df,
-    x="OverTime",
-    hue="Attrition",
-    ax=ax
-)
-
-st.pyplot(fig)
-
-st.info("""
-### Observation
-
-Employees who frequently work overtime are much more likely
-to leave the company than employees who do not work overtime.
-""")
-
-st.success("""
-### Recommendation
-
-Reduce excessive overtime through workload balancing,
-resource planning, and flexible scheduling.
-""")
-
-st.markdown("---")
-st.subheader("😊 Insight 3 – Job Satisfaction")
-
-fig, ax = plt.subplots(figsize=(6,4))
-
-sns.countplot(
-    data=df,
-    x="JobSatisfaction",
-    hue="Attrition",
-    ax=ax
-)
-
-st.pyplot(fig)
-
-st.info("""
-### Observation
-
-Lower job satisfaction is associated with a higher likelihood
-of employee attrition.
-""")
-
-st.success("""
-### Recommendation
-
-Regular feedback sessions,
-recognition programmes,
-and career development initiatives
-can improve employee satisfaction.
-""")
-st.markdown("---")
-st.subheader("💰 Insight 4 – Monthly Income")
-
-fig, ax = plt.subplots(figsize=(7,4))
-
-sns.boxplot(
-    data=df,
-    x="Attrition",
-    y="MonthlyIncome",
-    ax=ax
-)
-
-st.pyplot(fig)
-
-st.info("""
-### Observation
-
-Employees with lower monthly income tend to leave
-more frequently than higher-paid employees.
-""")
-
-st.success("""
-### Recommendation
-
-Review compensation structures,
-especially for critical job roles,
-to improve employee retention.
-""")
-
-st.markdown("---")
-st.subheader("⚖️ Insight 5 – Work-Life Balance")
-
-fig, ax = plt.subplots(figsize=(6,4))
-
-sns.countplot(
-    data=df,
-    x="WorkLifeBalance",
-    hue="Attrition",
-    ax=ax
-)
-
-st.pyplot(fig)
-
-st.info("""
-### Observation
-
-Employees reporting poor work-life balance
-are more likely to leave the organisation.
-""")
-
-st.success("""
-### Recommendation
-
-Encourage flexible working arrangements,
-mental wellness initiatives,
-and balanced workloads.
-""")
-
-st.markdown("---")
-st.subheader("🎯 Strategic HR Recommendations")
-
-st.markdown("""
-### Based on the analysis, the following actions are recommended:
-
-- Monitor employees working overtime regularly.
-- Improve job satisfaction through recognition and career growth.
-- Prioritise retention efforts in high-attrition departments.
-- Review compensation for critical roles.
-- Strengthen work-life balance initiatives.
-- Identify high-risk employees early using predictive analytics.
-""")
-
-st.markdown("---")
-
-st.subheader("📌 Key Takeaways")
-
-st.success("""
-✔ Attrition is influenced by multiple factors rather than a single cause.
-
-✔ Overtime, job satisfaction, monthly income, and work-life balance are among the strongest indicators.
-
-✔ Predictive analytics enables HR teams to identify employees at risk before they resign.
-
-✔ Combining machine learning with explainable AI supports informed and proactive retention strategies.
-""")
+render_footer()
