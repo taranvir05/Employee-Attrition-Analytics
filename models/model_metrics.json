@@ -1,0 +1,63 @@
+{
+  "model_name": "Logistic Regression",
+  "model_type": "LogisticRegression",
+  "model_class": "sklearn.linear_model._logistic.LogisticRegression",
+  "file_path": "models/best_model.pkl",
+  "last_modified": "2026-07-28 13:47:13",
+  "test_metrics": {
+    "accuracy": 87.76,
+    "precision": 73.91,
+    "recall": 36.17,
+    "f1_score": 48.57,
+    "roc_auc": 83.26
+  },
+  "full_dataset_metrics": {
+    "accuracy": 89.86,
+    "precision": 82.35,
+    "recall": 47.26,
+    "f1_score": 60.05,
+    "roc_auc": 86.97
+  },
+  "dataset_stats": {
+    "total_records": 1470,
+    "train_samples": 1176,
+    "test_samples": 294,
+    "feature_count": 59,
+    "attrition_count": 237,
+    "attrition_rate": 16.12,
+    "avg_age": 36.9,
+    "avg_income": 6503.0,
+    "avg_years_at_company": 7.0,
+    "avg_distance": 9.2,
+    "avg_satisfaction": 2.73
+  },
+  "model_comparison": [
+    {
+      "model": "Logistic Regression",
+      "accuracy": 87.76,
+      "precision": 73.91,
+      "recall": 36.17,
+      "f1": 48.57,
+      "roc_auc": 83.26,
+      "status": "Selected Model \u2713"
+    },
+    {
+      "model": "Random Forest",
+      "accuracy": 84.69,
+      "precision": 66.67,
+      "recall": 8.51,
+      "f1": 15.09,
+      "roc_auc": 77.28,
+      "status": "Evaluated"
+    },
+    {
+      "model": "Decision Tree",
+      "accuracy": 80.95,
+      "precision": 41.18,
+      "recall": 44.68,
+      "f1": 42.86,
+      "roc_auc": 66.27,
+      "status": "Evaluated"
+    }
+  ]
+}
