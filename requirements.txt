@@ -10,3 +10,4 @@ shap
 joblib
 Pillow
 reportlab
+fpdf2
