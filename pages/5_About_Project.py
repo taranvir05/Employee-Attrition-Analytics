@@ -231,8 +231,8 @@ with c_stat:
                     <div style="font-size: 1.2rem; font-weight: 800; color: #c084fc;">SHAP Active</div>
                 </div>
                 <div style="background: rgba(30, 41, 59, 0.5); padding: 10px; border-radius: 8px;">
-                    <div style="color: #94a3b8;">AUTHOR &amp; ROLE</div>
-                    <div style="font-size: 1.2rem; font-weight: 800; color: #4ade80;">Taranvir Kaur</div>
+                    <div style="color: #94a3b8;">DEPLOYMENT STATUS</div>
+                    <div style="font-size: 1.2rem; font-weight: 800; color: #4ade80;">Production Ready</div>
                 </div>
             </div>
         </div>

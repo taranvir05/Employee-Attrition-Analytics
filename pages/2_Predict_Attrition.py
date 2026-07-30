@@ -37,9 +37,9 @@ with col_form:
     st.markdown(
         f"""
         <div style="background: rgba(15,23,42,0.75); border: 1px solid rgba(255,255,255,0.09);
-                    border-radius: 16px; padding: 16px 20px 8px 20px; margin-bottom: 4px;
+                    border-radius: 16px; padding: 16px 20px 14px 20px; margin-bottom: 16px;
                     box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5); backdrop-filter: blur(12px);">
-            <h3 style="color: #ffffff; font-size: 1.1rem; font-weight: 700; margin: 0 0 4px 0;
+            <h3 style="color: #ffffff; font-size: 1.1rem; font-weight: 700; margin: 0;
                        display:flex; align-items:center; gap: 8px;">
                 {icon("user", size=18, colour="#38bdf8")}
                 Employee Data Entry Form
@@ -111,11 +111,32 @@ with col_form:
 # RESULT PANEL
 # ==========================================
 with col_result:
+    # ── Top Result Header Card (Matches Form Header) ───
+    st.markdown(
+        f"""
+        <div style="background: rgba(15,23,42,0.75); border: 1px solid rgba(56,189,248,0.25);
+                    border-radius: 16px; padding: 16px 20px 14px 20px; margin-bottom: 16px;
+                    box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5); backdrop-filter: blur(12px);">
+            <h3 style="color: #ffffff; font-size: 1.1rem; font-weight: 700; margin: 0;
+                       display:flex; align-items:center; justify-content:space-between;">
+                <span style="display:flex; align-items:center; gap: 8px;">
+                    {icon("target", size=18, colour="#38bdf8")}
+                    Predicted Attrition Analysis Result
+                </span>
+                <span class="badge-pill badge-cyan" style="font-size: 0.72rem; padding: 3px 8px;">
+                    Live ML Output
+                </span>
+            </h3>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
     if not predict_button:
         _pred_model_name = get_model_display_name()
         st.markdown(
             f"""
-            <div class="saas-card" style="text-align: center; padding: 60px 20px;
+            <div class="saas-card" style="text-align: center; padding: 50px 20px;
                                           border: 2px dashed rgba(56, 189, 248, 0.2);">
                 <div style="display:flex;justify-content:center;margin-bottom:16px;opacity:0.7;">
                     {icon("brain", size=48, colour="#38bdf8")}
@@ -153,7 +174,7 @@ with col_result:
                                 padding:14px 18px;border-radius:12px;
                                 background:rgba(30,41,59,0.6);
                                 border:1px solid rgba(56,189,248,0.2);
-                                margin-bottom:8px;">
+                                margin-bottom:12px;">
                         <div style="width:18px;height:18px;border-radius:50%;
                                     border:2px solid rgba(56,189,248,0.25);
                                     border-top-color:#38bdf8;
@@ -275,29 +296,28 @@ with col_result:
         result_label  = "HIGH ATTRITION RISK" if is_high_risk else "LOW ATTRITION RISK"
 
         st.markdown(
-            f'<div class="saas-card" style="border: 1px solid {status_color}; padding: 20px;">',
-            unsafe_allow_html=True,
-        )
-
-        st.markdown(
             f"""
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
-                <span class="badge-pill badge-{badge_type}"
-                      style="font-size: 0.82rem; padding: 5px 12px; gap: 6px;">
-                    {badge_icon} {result_label}
-                </span>
-                <span style="color: #94a3b8; font-size: 0.8rem; font-weight: 600;">
-                    Confidence: {confidence*100:.1f}%
-                </span>
-            </div>
-            <div style="text-align: center; margin: 12px 0 18px 0;">
-                <div style="font-size: 0.78rem; color: #94a3b8; font-weight: 700;
-                             text-transform: uppercase; letter-spacing: 0.06em;">
-                    Estimated Attrition Probability
+            <div style="background: rgba(15,23,42,0.75); border: 1px solid {status_color};
+                        border-radius: 16px; padding: 20px; margin-bottom: 16px;
+                        box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+                    <span class="badge-pill badge-{badge_type}"
+                          style="font-size: 0.82rem; padding: 5px 12px; gap: 6px;">
+                        {badge_icon} {result_label}
+                    </span>
+                    <span style="color: #94a3b8; font-size: 0.8rem; font-weight: 600;">
+                        Confidence: {confidence*100:.1f}%
+                    </span>
                 </div>
-                <div style="font-size: 3.2rem; font-weight: 800; color: {status_color};
-                             letter-spacing: -0.03em; margin: 4px 0;">
-                    {probability*100:.1f}%
+                <div style="text-align: center; margin: 12px 0 18px 0;">
+                    <div style="font-size: 0.78rem; color: #94a3b8; font-weight: 700;
+                                 text-transform: uppercase; letter-spacing: 0.06em;">
+                        Estimated Attrition Probability
+                    </div>
+                    <div style="font-size: 3.2rem; font-weight: 800; color: {status_color};
+                                 letter-spacing: -0.03em; margin: 4px 0;">
+                        {probability*100:.1f}%
+                    </div>
                 </div>
             </div>
             """,
@@ -388,8 +408,6 @@ with col_result:
             """,
             unsafe_allow_html=True,
         )
-
-        st.markdown("</div>", unsafe_allow_html=True)
 
         # ── PDF Download ──────────────────────────────────────
         st.markdown('<div style="margin-top: 14px;"></div>', unsafe_allow_html=True)
