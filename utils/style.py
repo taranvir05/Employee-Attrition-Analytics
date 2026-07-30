@@ -122,14 +122,56 @@ def load_css():
             margin-bottom: 18px;
             box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
             backdrop-filter: blur(12px);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.25s cubic-bezier(0.4,0,0.2,1);
             position: relative;
             overflow: hidden;
         }
         .saas-card:hover {
-            border-color: rgba(56, 189, 248, 0.35);
-            box-shadow: 0 14px 35px -10px rgba(14, 165, 233, 0.2);
+            border-color: rgba(56, 189, 248, 0.3);
+            box-shadow: 0 0 0 1px rgba(56,189,248,0.08), 0 16px 40px -12px rgba(14, 165, 233, 0.25);
             transform: translateY(-2px);
+        }
+        /* Equal-height insight card columns — wrap both cards in a flex row */
+        .insight-row {
+            display: flex;
+            gap: 18px;
+            align-items: stretch;
+        }
+        .insight-row .saas-card {
+            flex: 1;
+            margin-bottom: 0;
+            display: flex;
+            flex-direction: column;
+        }
+        .insight-row .saas-card p {
+            flex: 1;
+        }
+        /* Recommendation bullet list */
+        .rec-bullets {
+            list-style: none;
+            padding: 0;
+            margin: 8px 0 0 0;
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+        .rec-bullets li {
+            display: flex;
+            align-items: flex-start;
+            gap: 9px;
+            font-size: 0.86rem;
+            color: #cbd5e1;
+            line-height: 1.5;
+        }
+        .rec-bullets li::before {
+            content: '';
+            display: block;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #38bdf8;
+            margin-top: 6px;
+            flex-shrink: 0;
         }
 
         /* Automatic SaaS Card Styling for Plotly Charts */
@@ -225,24 +267,53 @@ def load_css():
             box-shadow: 0 0 6px rgba(56, 189, 248, 0.8);
         }
 
-        /* Buttons Custom Styling */
+        /* Buttons — Premium gradient with micro-interaction */
         div.stButton > button {
-            background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%) !important;
+            background: linear-gradient(135deg, #0369a1 0%, #1d4ed8 100%) !important;
             color: #ffffff !important;
             border-radius: 12px !important;
-            border: 1px solid rgba(255, 255, 255, 0.15) !important;
-            padding: 12px 22px !important;
+            border: 1px solid rgba(56, 189, 248, 0.25) !important;
+            padding: 12px 24px !important;
             font-size: 0.92rem !important;
             font-weight: 700 !important;
-            box-shadow: 0 4px 15px rgba(2, 132, 199, 0.35) !important;
-            transition: all 0.25s ease-in-out !important;
+            letter-spacing: 0.01em !important;
+            box-shadow: 0 4px 18px rgba(2, 132, 199, 0.35), inset 0 1px 0 rgba(255,255,255,0.1) !important;
+            transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease !important;
             width: 100% !important;
         }
         div.stButton > button:hover {
-            background: linear-gradient(135deg, #38bdf8 0%, #3b82f6 100%) !important;
-            box-shadow: 0 8px 25px rgba(56, 189, 248, 0.45) !important;
+            background: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%) !important;
+            box-shadow: 0 8px 28px rgba(56, 189, 248, 0.5), inset 0 1px 0 rgba(255,255,255,0.15) !important;
             transform: translateY(-2px) !important;
-            color: #ffffff !important;
+            border-color: rgba(56, 189, 248, 0.5) !important;
+        }
+        div.stButton > button:active {
+            transform: translateY(0px) !important;
+            box-shadow: 0 2px 8px rgba(2, 132, 199, 0.3) !important;
+        }
+        /* Download button — teal accent variant */
+        div.stDownloadButton > button {
+            background: linear-gradient(135deg, rgba(15,23,42,0.9) 0%, rgba(30,41,59,0.9) 100%) !important;
+            color: #38bdf8 !important;
+            border-radius: 12px !important;
+            border: 1px solid rgba(56, 189, 248, 0.4) !important;
+            padding: 11px 22px !important;
+            font-size: 0.88rem !important;
+            font-weight: 700 !important;
+            letter-spacing: 0.01em !important;
+            box-shadow: 0 4px 14px rgba(56, 189, 248, 0.15), inset 0 1px 0 rgba(255,255,255,0.05) !important;
+            transition: all 0.2s ease !important;
+            width: 100% !important;
+        }
+        div.stDownloadButton > button:hover {
+            background: linear-gradient(135deg, rgba(56,189,248,0.12) 0%, rgba(99,102,241,0.12) 100%) !important;
+            border-color: rgba(56, 189, 248, 0.7) !important;
+            box-shadow: 0 6px 22px rgba(56, 189, 248, 0.3) !important;
+            transform: translateY(-2px) !important;
+            color: #7dd3fc !important;
+        }
+        div.stDownloadButton > button:active {
+            transform: translateY(0px) !important;
         }
 
         /* Form Controls Styling */

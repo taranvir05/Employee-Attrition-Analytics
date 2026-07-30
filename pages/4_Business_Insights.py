@@ -12,7 +12,7 @@ from utils.charts import (
 
 st.set_page_config(
     page_title="Business Insights - PulseHR",
-    page_icon="💼",
+    page_icon=":material/trending_up:",
     layout="wide"
 )
 
@@ -32,7 +32,8 @@ highest_role = df[df["Attrition"] == "Yes"]["JobRole"].value_counts().idxmax()
 render_section_header(
     "Executive HR Business Briefing",
     "Data-driven findings, quantified financial & operational impacts, and strategic intervention roadmaps",
-    "EXECUTIVE REPORT"
+    "EXECUTIVE REPORT",
+    icon_name="trending-up",
 )
 
 highest_dept_attr_count = (df[(df["Department"] == highest_dept) & (df["Attrition"] == "Yes")].shape[0])
@@ -46,11 +47,11 @@ highest_role_attr_count = (df[(df["JobRole"] == highest_role) & (df["Attrition"]
 k1, k2, k3 = st.columns(3)
 
 with k1:
-    render_kpi_card("Overall Attrition", f"{attrition_rate:.1f}%", "Total Turnover Benchmark", "📉", "Turnover", "danger")
+    render_kpi_card("Overall Attrition", f"{attrition_rate:.1f}%", "Total Turnover Benchmark", "trending-up", "Turnover", "danger")
 with k2:
-    render_kpi_card("Highest Risk Dept", f"{highest_dept}", f"Accounts for {highest_dept_pct:.1f}% Turnover", "🏢", "Action Needed", "warning")
+    render_kpi_card("Highest Risk Dept", f"{highest_dept}", f"Accounts for {highest_dept_pct:.1f}% Turnover", "home", "Action Needed", "warning")
 with k3:
-    render_kpi_card("Highest Risk Role", f"{highest_role}", f"{highest_role_attr_count} Resignations", "💼", "Priority 1", "purple")
+    render_kpi_card("Highest Risk Role", f"{highest_role}", f"{highest_role_attr_count} Resignations", "user", "Priority 1", "purple")
 
 st.markdown('<div style="margin-bottom: 16px;"></div>', unsafe_allow_html=True)
 
@@ -77,20 +78,20 @@ with col_chart1:
 with col_text1:
     st.markdown('<span class="badge-pill badge-danger" style="margin-bottom: 8px;">Insight 01 • Department Dynamics</span>', unsafe_allow_html=True)
     st.markdown('<h3 style="color: #ffffff; font-weight: 700; margin: 6px 0;">Research & Development and Sales Lead Turnover</h3>', unsafe_allow_html=True)
-    
+
     st.markdown(
         f"""
         <div style="display: flex; flex-direction: column; gap: 10px; font-size: 0.88rem; margin-top: 12px;">
             <div style="background: rgba(30, 41, 59, 0.6); padding: 12px; border-radius: 10px;">
-                <span style="color: #38bdf8; font-weight: 700;">📌 Observation:</span>
+                <span style="color: #38bdf8; font-weight: 700;">Observation:</span>
                 <span style="color: #cbd5e1;"> R&amp;D accounts for {rd_attr_pct:.1f}% of total company resignations, followed by Sales at {sales_attr_pct:.1f}%.</span>
             </div>
             <div style="background: rgba(30, 41, 59, 0.6); padding: 12px; border-radius: 10px;">
-                <span style="color: #f87171; font-weight: 700;">💥 Business Impact:</span>
+                <span style="color: #f87171; font-weight: 700;">Business Impact:</span>
                 <span style="color: #cbd5e1;"> Project delays in core engineering initiatives and lost sales client relationships.</span>
             </div>
             <div style="background: rgba(34, 197, 94, 0.12); padding: 12px; border-radius: 10px; border: 1px solid rgba(34, 197, 94, 0.2);">
-                <span style="color: #4ade80; font-weight: 700;">🎯 Actionable Plan:</span>
+                <span style="color: #4ade80; font-weight: 700;">Actionable Plan:</span>
                 <span style="color: #f1f5f9;"> Deploy department-specific engagement pulses and review workload distribution in technical teams.</span>
             </div>
         </div>
@@ -111,20 +112,20 @@ with col_chart2:
 with col_text2:
     st.markdown('<span class="badge-pill badge-warning" style="margin-bottom: 8px;">Insight 02 • Overtime & Burnout</span>', unsafe_allow_html=True)
     st.markdown('<h3 style="color: #ffffff; font-weight: 700; margin: 6px 0;">Overtime Workers Show Higher Exit Rate</h3>', unsafe_allow_html=True)
-    
+
     st.markdown(
         f"""
         <div style="display: flex; flex-direction: column; gap: 10px; font-size: 0.88rem; margin-top: 12px;">
             <div style="background: rgba(30, 41, 59, 0.6); padding: 12px; border-radius: 10px;">
-                <span style="color: #38bdf8; font-weight: 700;">📌 Observation:</span>
+                <span style="color: #38bdf8; font-weight: 700;">Observation:</span>
                 <span style="color: #cbd5e1;"> {ot_yes_rate:.1f}% of overtime employees leave, compared to just {ot_no_rate:.1f}% among non-overtime staff.</span>
             </div>
             <div style="background: rgba(30, 41, 59, 0.6); padding: 12px; border-radius: 10px;">
-                <span style="color: #f87171; font-weight: 700;">💥 Business Impact:</span>
+                <span style="color: #f87171; font-weight: 700;">Business Impact:</span>
                 <span style="color: #cbd5e1;"> Severe employee burnout, lowered productivity, and compounding turnover in remaining team members.</span>
             </div>
             <div style="background: rgba(34, 197, 94, 0.12); padding: 12px; border-radius: 10px; border: 1px solid rgba(34, 197, 94, 0.2);">
-                <span style="color: #4ade80; font-weight: 700;">🎯 Actionable Plan:</span>
+                <span style="color: #4ade80; font-weight: 700;">Actionable Plan:</span>
                 <span style="color: #f1f5f9;"> Enforce mandatory overtime caps, hire temporary contractors for peak project cycles, and introduce flexible hours.</span>
             </div>
         </div>
@@ -145,20 +146,20 @@ with col_chart3:
 with col_text3:
     st.markdown('<span class="badge-pill badge-purple" style="margin-bottom: 8px;">Insight 03 • Compensation Disparity</span>', unsafe_allow_html=True)
     st.markdown('<h3 style="color: #ffffff; font-weight: 700; margin: 6px 0;">Lower Income Salary Bands Drive Resignations</h3>', unsafe_allow_html=True)
-    
+
     st.markdown(
         f"""
         <div style="display: flex; flex-direction: column; gap: 10px; font-size: 0.88rem; margin-top: 12px;">
             <div style="background: rgba(30, 41, 59, 0.6); padding: 12px; border-radius: 10px;">
-                <span style="color: #38bdf8; font-weight: 700;">📌 Observation:</span>
+                <span style="color: #38bdf8; font-weight: 700;">Observation:</span>
                 <span style="color: #cbd5e1;"> Median monthly income for departing employees is ${med_inc_yes:,} vs ${med_inc_no:,} for retained employees.</span>
             </div>
             <div style="background: rgba(30, 41, 59, 0.6); padding: 12px; border-radius: 10px;">
-                <span style="color: #f87171; font-weight: 700;">💥 Business Impact:</span>
+                <span style="color: #f87171; font-weight: 700;">Business Impact:</span>
                 <span style="color: #cbd5e1;"> Poaching by market competitors offering compensation bumps.</span>
             </div>
             <div style="background: rgba(34, 197, 94, 0.12); padding: 12px; border-radius: 10px; border: 1px solid rgba(34, 197, 94, 0.2);">
-                <span style="color: #4ade80; font-weight: 700;">🎯 Actionable Plan:</span>
+                <span style="color: #4ade80; font-weight: 700;">Actionable Plan:</span>
                 <span style="color: #f1f5f9;"> Re-index base pay for mid-level technical roles and introduce retention stock options.</span>
             </div>
         </div>
@@ -179,20 +180,20 @@ with col_chart4:
 with col_text4:
     st.markdown('<span class="badge-pill badge-cyan" style="margin-bottom: 8px;">Insight 04 • Work-Life Balance</span>', unsafe_allow_html=True)
     st.markdown('<h3 style="color: #ffffff; font-weight: 700; margin: 6px 0;">Poor Work-Life Rating (Level 1) Triples Risk</h3>', unsafe_allow_html=True)
-    
+
     st.markdown(
         f"""
         <div style="display: flex; flex-direction: column; gap: 10px; font-size: 0.88rem; margin-top: 12px;">
             <div style="background: rgba(30, 41, 59, 0.6); padding: 12px; border-radius: 10px;">
-                <span style="color: #38bdf8; font-weight: 700;">📌 Observation:</span>
+                <span style="color: #38bdf8; font-weight: 700;">Observation:</span>
                 <span style="color: #cbd5e1;"> Staff rating work-life balance at Level 1 suffer a {wlb1_rate:.1f}% departure rate.</span>
             </div>
             <div style="background: rgba(30, 41, 59, 0.6); padding: 12px; border-radius: 10px;">
-                <span style="color: #f87171; font-weight: 700;">💥 Business Impact:</span>
+                <span style="color: #f87171; font-weight: 700;">Business Impact:</span>
                 <span style="color: #cbd5e1;"> Low employer brand ratings on Glassdoor and reduced candidate recruitment conversion.</span>
             </div>
             <div style="background: rgba(34, 197, 94, 0.12); padding: 12px; border-radius: 10px; border: 1px solid rgba(34, 197, 94, 0.2);">
-                <span style="color: #4ade80; font-weight: 700;">🎯 Actionable Plan:</span>
+                <span style="color: #4ade80; font-weight: 700;">Actionable Plan:</span>
                 <span style="color: #f1f5f9;"> Introduce hybrid work policies, wellness stipends, and quarterly manager feedback scorecards.</span>
             </div>
         </div>
@@ -203,7 +204,7 @@ with col_text4:
 # ==========================================
 # STRATEGIC ROADMAP CARD
 # ==========================================
-render_section_header("Strategic Executive Roadmap", "Prioritized retention action plan for leadership team", "STRATEGY ROADMAP")
+render_section_header("Strategic Executive Roadmap", "Prioritized retention action plan for leadership team", "STRATEGY ROADMAP", icon_name="activity")
 
 st.markdown(
     """

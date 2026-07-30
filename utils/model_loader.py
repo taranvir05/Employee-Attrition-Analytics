@@ -119,7 +119,7 @@ def get_model_metrics():
             "avg_satisfaction": round(df["JobSatisfaction"].mean(), 2)
         },
         "model_comparison": [
-            {"model": "Logistic Regression", "accuracy": 87.76, "precision": 73.91, "recall": 36.17, "f1": 48.57, "roc_auc": 83.26, "status": "Selected Model ✓"},
+            {"model": "Logistic Regression", "accuracy": 87.76, "precision": 73.91, "recall": 36.17, "f1": 48.57, "roc_auc": 83.26, "status": "Selected Model"},
             {"model": "Random Forest", "accuracy": 84.69, "precision": 66.67, "recall": 8.51, "f1": 15.09, "roc_auc": 77.28, "status": "Evaluated"},
             {"model": "Decision Tree", "accuracy": 80.95, "precision": 41.18, "recall": 44.68, "f1": 42.86, "roc_auc": 66.27, "status": "Evaluated"}
         ]

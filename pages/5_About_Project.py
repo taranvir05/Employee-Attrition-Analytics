@@ -2,10 +2,11 @@ import streamlit as st
 from utils.style import load_css
 from utils.helpers import render_sidebar, render_kpi_card, render_section_header, render_footer
 from utils.model_loader import get_model_display_name, get_model_metadata, get_model_metrics
+from utils.icons import icon
 
 st.set_page_config(
     page_title="About Project - PulseHR",
-    page_icon="📄",
+    page_icon=":material/description:",
     layout="wide"
 )
 
@@ -15,7 +16,6 @@ render_sidebar()
 _prod_model = get_model_display_name()
 _meta = get_model_metadata()
 
-# Load all metrics data at the top so every section below can use _stats, _test_m, _comp_list
 _metrics_data = get_model_metrics()
 _test_m = _metrics_data.get("test_metrics", {})
 _stats = _metrics_data.get("dataset_stats", {})
@@ -24,7 +24,8 @@ _comp_list = _metrics_data.get("model_comparison", [])
 render_section_header(
     "PulseHR Platform Architecture & Documentation",
     "End-to-end Machine Learning, Explainable AI (SHAP), and HR Analytics System Specifications",
-    "SYSTEM SPECIFICATIONS"
+    "SYSTEM SPECIFICATIONS",
+    icon_name="file-text",
 )
 
 # ==========================================
@@ -55,10 +56,10 @@ with col_obj:
             <span class="badge-pill badge-purple" style="margin-bottom: 8px;">Key Deliverables</span>
             <h3 style="color: #ffffff; font-weight: 700; margin: 4px 0 10px 0;">Platform Engineering Goals</h3>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 0.85rem;">
-                <div style="background: rgba(30, 41, 59, 0.5); padding: 8px 12px; border-radius: 8px; color: #4ade80;">✔ {_prod_model} Model</div>
-                <div style="background: rgba(30, 41, 59, 0.5); padding: 8px 12px; border-radius: 8px; color: #4ade80;">✔ Transparent SHAP XAI</div>
-                <div style="background: rgba(30, 41, 59, 0.5); padding: 8px 12px; border-radius: 8px; color: #4ade80;">✔ Executive Analytics Hub</div>
-                <div style="background: rgba(30, 41, 59, 0.5); padding: 8px 12px; border-radius: 8px; color: #4ade80;">✔ Real-Time Risk Profiler</div>
+                <div style="background: rgba(30, 41, 59, 0.5); padding: 8px 12px; border-radius: 8px; color: #4ade80;">[+] {_prod_model} Model</div>
+                <div style="background: rgba(30, 41, 59, 0.5); padding: 8px 12px; border-radius: 8px; color: #4ade80;">[+] Transparent SHAP XAI</div>
+                <div style="background: rgba(30, 41, 59, 0.5); padding: 8px 12px; border-radius: 8px; color: #4ade80;">[+] Executive Analytics Hub</div>
+                <div style="background: rgba(30, 41, 59, 0.5); padding: 8px 12px; border-radius: 8px; color: #4ade80;">[+] Real-Time Risk Profiler</div>
             </div>
         </div>
         """,
@@ -70,34 +71,34 @@ st.markdown('<div style="margin-bottom: 16px;"></div>', unsafe_allow_html=True)
 # ==========================================
 # SYSTEM WORKFLOW ARCHITECTURE (VISUAL NODES)
 # ==========================================
-render_section_header("System Pipeline Architecture", "Data ingestion through feature engineering to ML inference & SHAP audit", "WORKFLOW")
+render_section_header("System Pipeline Architecture", "Data ingestion through feature engineering to ML inference & SHAP audit", "WORKFLOW", icon_name="activity")
 
 st.markdown(
     f"""
     <div class="saas-card">
         <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; text-align: center;">
             <div style="background: rgba(30, 41, 59, 0.6); padding: 14px; border-radius: 12px; border: 1px solid rgba(56, 189, 248, 0.2);">
-                <div style="font-size: 1.5rem; margin-bottom: 4px;">📥</div>
+                <div style="display:flex;justify-content:center;margin-bottom:6px;">{icon('database', size=22, colour='#38bdf8')}</div>
                 <div style="color: #38bdf8; font-weight: 700; font-size: 0.85rem;">1. Data Ingestion</div>
                 <div style="color: #94a3b8; font-size: 0.72rem; margin-top: 4px;">IBM HR Dataset ({_stats.get('total_records', 1470):,} records)</div>
             </div>
             <div style="background: rgba(30, 41, 59, 0.6); padding: 14px; border-radius: 12px; border: 1px solid rgba(99, 102, 241, 0.2);">
-                <div style="font-size: 1.5rem; margin-bottom: 4px;">⚙️</div>
+                <div style="display:flex;justify-content:center;margin-bottom:6px;">{icon('settings', size=22, colour='#818cf8')}</div>
                 <div style="color: #818cf8; font-weight: 700; font-size: 0.85rem;">2. Feature Pipeline</div>
                 <div style="color: #94a3b8; font-size: 0.72rem; margin-top: 4px;">One-Hot Encoding &amp; Standard Scaling</div>
             </div>
             <div style="background: rgba(30, 41, 59, 0.6); padding: 14px; border-radius: 12px; border: 1px solid rgba(168, 85, 247, 0.2);">
-                <div style="font-size: 1.5rem; margin-bottom: 4px;">🤖</div>
+                <div style="display:flex;justify-content:center;margin-bottom:6px;">{icon('cpu', size=22, colour='#c084fc')}</div>
                 <div style="color: #c084fc; font-weight: 700; font-size: 0.85rem;">3. ML Model</div>
                 <div style="color: #94a3b8; font-size: 0.72rem; margin-top: 4px;">{_prod_model}</div>
             </div>
             <div style="background: rgba(30, 41, 59, 0.6); padding: 14px; border-radius: 12px; border: 1px solid rgba(56, 189, 248, 0.2);">
-                <div style="font-size: 1.5rem; margin-bottom: 4px;">🧠</div>
+                <div style="display:flex;justify-content:center;margin-bottom:6px;">{icon('brain', size=22, colour='#38bdf8')}</div>
                 <div style="color: #38bdf8; font-weight: 700; font-size: 0.85rem;">4. SHAP XAI Engine</div>
                 <div style="color: #94a3b8; font-size: 0.72rem; margin-top: 4px;">LinearExplainer / Shapley Analysis</div>
             </div>
             <div style="background: rgba(30, 41, 59, 0.6); padding: 14px; border-radius: 12px; border: 1px solid rgba(34, 197, 94, 0.2);">
-                <div style="font-size: 1.5rem; margin-bottom: 4px;">📊</div>
+                <div style="display:flex;justify-content:center;margin-bottom:6px;">{icon('bar-chart', size=22, colour='#4ade80')}</div>
                 <div style="color: #4ade80; font-weight: 700; font-size: 0.85rem;">5. SaaS Dashboard</div>
                 <div style="color: #94a3b8; font-size: 0.72rem; margin-top: 4px;">Streamlit + Plotly Interface</div>
             </div>
@@ -107,43 +108,41 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# _metrics_data, _test_m, _stats, _comp_list already loaded at module top
-
 # ==========================================
 # PRODUCTION MODEL SNAPSHOT CARDS
 # ==========================================
-render_section_header("Production Model Performance Snapshot", "Notebook 09 verified evaluation metrics on unseen 20% test partition (294 samples)", "MODEL METRICS")
+render_section_header("Production Model Performance Snapshot", "Notebook 09 verified evaluation metrics on unseen 20% test partition (294 samples)", "MODEL METRICS", icon_name="cpu")
 
 s1, s2, s3, s4, s5 = st.columns(5)
 with s1:
-    render_kpi_card("Selected Model", _prod_model, "Primary Engine", "🤖", "Best Model", "cyan")
+    render_kpi_card("Selected Model", _prod_model, "Primary Engine", "cpu", "Best Model", "cyan")
 with s2:
-    render_kpi_card("Test Accuracy", f"{_test_m.get('accuracy', 87.76):.2f}%", "Unseen Test Set", "🎯", "Notebook 09", "success")
+    render_kpi_card("Test Accuracy", f"{_test_m.get('accuracy', 87.76):.2f}%", "Unseen Test Set", "target", "Notebook 09", "success")
 with s3:
-    render_kpi_card("Precision", f"{_test_m.get('precision', 73.91):.2f}%", "Positive Class (1)", "⚖️", "Notebook 09", "purple")
+    render_kpi_card("Precision", f"{_test_m.get('precision', 73.91):.2f}%", "Positive Class (1)", "activity", "Notebook 09", "purple")
 with s4:
-    render_kpi_card("Recall", f"{_test_m.get('recall', 36.17):.2f}%", "Sensitivity", "🔍", "Notebook 09", "warning")
+    render_kpi_card("Recall", f"{_test_m.get('recall', 36.17):.2f}%", "Sensitivity", "search", "Notebook 09", "warning")
 with s5:
-    render_kpi_card("F1-Score / ROC-AUC", f"{_test_m.get('f1_score', 48.57):.2f}% / {(_test_m.get('roc_auc', 83.26)/100 if _test_m.get('roc_auc', 83.26)>1 else _test_m.get('roc_auc', 83.26)):.2f}", "Harmonic Mean / AUC", "📈", "Notebook 09", "cyan")
+    render_kpi_card("F1-Score / ROC-AUC", f"{_test_m.get('f1_score', 48.57):.2f}% / {(_test_m.get('roc_auc', 83.26)/100 if _test_m.get('roc_auc', 83.26)>1 else _test_m.get('roc_auc', 83.26)):.2f}", "Harmonic Mean / AUC", "trending-up", "Notebook 09", "cyan")
 
 st.markdown('<div style="margin-bottom: 16px;"></div>', unsafe_allow_html=True)
 
 s6, s7, s8, s9 = st.columns(4)
 with s6:
-    render_kpi_card("Training Partition", f"{_stats.get('train_samples', 1176):,} Rows", "80% Split", "📊", "Notebook 07", "purple")
+    render_kpi_card("Training Partition", f"{_stats.get('train_samples', 1176):,} Rows", "80% Split", "bar-chart", "Notebook 07", "purple")
 with s7:
-    render_kpi_card("Testing Partition", f"{_stats.get('test_samples', 294):,} Rows", "20% Holdout Split", "🧪", "Notebook 07", "cyan")
+    render_kpi_card("Testing Partition", f"{_stats.get('test_samples', 294):,} Rows", "20% Holdout Split", "activity", "Notebook 07", "cyan")
 with s8:
-    render_kpi_card("Engineered Features", f"{_stats.get('feature_count', 59)} Features", "Pipeline Dimension", "⚙️", "Notebook 06", "success")
+    render_kpi_card("Engineered Features", f"{_stats.get('feature_count', 59)} Features", "Pipeline Dimension", "settings", "Notebook 06", "success")
 with s9:
-    render_kpi_card("Explainability Engine", "LinearExplainer", "SHAP XAI Active", "🧠", "Notebook 10", "warning")
+    render_kpi_card("Explainability Engine", "LinearExplainer", "SHAP XAI Active", "brain", "Notebook 10", "warning")
 
 st.markdown('<div style="margin-bottom: 16px;"></div>', unsafe_allow_html=True)
 
 # ==========================================
 # MODEL COMPARISON MATRIX TABLE (DYNAMIC)
 # ==========================================
-render_section_header("Machine Learning Model Comparison Matrix", "Evaluation benchmarks computed across candidate algorithms in Notebook 09", "MODEL BENCHMARKS")
+render_section_header("Machine Learning Model Comparison Matrix", "Evaluation benchmarks computed across candidate algorithms in Notebook 09", "MODEL BENCHMARKS", icon_name="bar-chart")
 
 rows_html = ""
 for item in _comp_list:
@@ -151,7 +150,7 @@ for item in _comp_list:
     row_bg = "background: rgba(56, 189, 248, 0.08);" if is_sel else ""
     text_col = "#38bdf8" if is_sel else "#ffffff"
     badge_cls = "badge-success" if is_sel else "badge-cyan"
-    
+
     rows_html += f"""
     <tr style="border-bottom: 1px solid rgba(255,255,255,0.05); {row_bg}">
         <td style="padding: 12px; font-weight: {'800' if is_sel else '600'}; color: {text_col};">{item['model']}</td>
@@ -195,9 +194,11 @@ c_tech, c_stat = st.columns(2)
 
 with c_tech:
     st.markdown(
-        """
+        f"""
         <div class="saas-card">
-            <h4 style="color: #ffffff; font-weight: 700; margin-top:0;">🚀 Future Enhancements Roadmap</h4>
+            <h4 style="color: #ffffff; font-weight: 700; margin-top:0; display:flex; align-items:center; gap:8px;">
+                {icon('arrow-up-right', size=16, colour='#38bdf8')} Future Enhancements Roadmap
+            </h4>
             <div style="display: flex; flex-direction: column; gap: 8px; font-size: 0.85rem; color: #cbd5e1;">
                 <div>• Real-time REST API integration with Workday &amp; SAP SuccessFactors</div>
                 <div>• Automated weekly email alerts to HR managers for high-risk staff</div>
@@ -213,7 +214,9 @@ with c_stat:
     st.markdown(
         f"""
         <div class="saas-card">
-            <h4 style="color: #ffffff; font-weight: 700; margin-top:0;">📊 Project Statistics Summary</h4>
+            <h4 style="color: #ffffff; font-weight: 700; margin-top:0; display:flex; align-items:center; gap:8px;">
+                {icon('bar-chart', size=16, colour='#38bdf8')} Project Statistics Summary
+            </h4>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.82rem;">
                 <div style="background: rgba(30, 41, 59, 0.5); padding: 10px; border-radius: 8px;">
                     <div style="color: #94a3b8;">DATASET RECORDS</div>
