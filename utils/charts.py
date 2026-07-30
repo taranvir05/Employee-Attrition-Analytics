@@ -14,13 +14,13 @@ def apply_theme(fig, title=""):
     fig.update_layout(
         title=dict(
             text=f"<b>{title}</b>",
-            font=dict(size=15, color="#ffffff"),
-            x=0.01, y=0.96
+            font=dict(size=14, color="#ffffff"),
+            x=0.01, y=0.98
         ),
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
         font=dict(color="#cbd5e1", family="Plus Jakarta Sans, sans-serif"),
-        margin=dict(l=30, r=30, t=50, b=30),
+        margin=dict(l=35, r=35, t=60, b=35),
         legend=dict(
             orientation="h",
             yanchor="bottom",
@@ -197,6 +197,7 @@ def plot_income_by_dept(df):
         color="Department",
         color_discrete_sequence=[CYAN, BLUE, PURPLE]
     )
+    fig.update_layout(showlegend=False)
     return apply_theme(fig, "Monthly Income Spread by Department")
 
 def plot_years_at_company(df):

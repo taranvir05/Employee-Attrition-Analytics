@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 from utils.style import load_css
+from utils.model_loader import get_model_display_name, get_model_metadata, print_startup_report
 from utils.helpers import (
     render_sidebar,
     render_kpi_card,
@@ -29,6 +30,9 @@ st.set_page_config(
 # Load CSS & Render Full Sidebar Navigation
 load_css()
 render_sidebar()
+
+# Print verification report to console at startup
+print_startup_report()
 
 # Load Dataset for KPI preview
 @st.cache_data
@@ -81,19 +85,22 @@ with col_hero_btn2:
         st.switch_page("pages/1_HR_Dashboard.py")
 
 with col_hero_pills:
+    _hero_model = get_model_display_name()
+    _meta = get_model_metadata()
+    _feature_count = _meta["feature_count"]
     st.markdown(
-        """
+        f"""
         <div style="display: flex; gap: 8px; justify-content: flex-end; align-items: center; height: 100%; flex-wrap: wrap;">
-            <span class="badge-pill badge-success" style="font-size: 0.82rem; padding: 6px 14px;">✨ 92% Accuracy</span>
-            <span class="badge-pill badge-cyan" style="font-size: 0.82rem; padding: 6px 14px;">👥 1,470 Employees</span>
-            <span class="badge-pill badge-purple" style="font-size: 0.82rem; padding: 6px 14px;">⚙️ 35 Features</span>
+            <span class="badge-pill badge-cyan" style="font-size: 0.82rem; padding: 6px 14px;">🤖 {_hero_model}</span>
+            <span class="badge-pill badge-cyan" style="font-size: 0.82rem; padding: 6px 14px;">👥 {total_emp:,} Employees</span>
+            <span class="badge-pill badge-purple" style="font-size: 0.82rem; padding: 6px 14px;">⚙️ {_feature_count} Features</span>
             <span class="badge-pill badge-warning" style="font-size: 0.82rem; padding: 6px 14px;">🧠 SHAP Enabled</span>
         </div>
         """,
         unsafe_allow_html=True
     )
 
-st.markdown('<div class="glow-divider"></div>', unsafe_allow_html=True)
+st.markdown("<div style='margin-bottom: 16px;'></div>", unsafe_allow_html=True)
 
 # ==========================================
 # COMPANY OVERVIEW KPI CARDS
@@ -103,19 +110,19 @@ render_section_header("Company Overview", "Key workforce metrics & turnover heal
 k1, k2, k3, k4, k5, k6 = st.columns(6)
 
 with k1:
-    render_kpi_card("Employees", f"{total_emp:,}", "Total Headcount", "👥", "+2.4%", "cyan", [35, 50, 65, 80, 85, 92])
+    render_kpi_card("Employees", f"{total_emp:,}", "Total Headcount", "👥", "Dataset", "cyan", [35, 50, 65, 80, 85, 92])
 with k2:
-    render_kpi_card("Attrition Rate", f"{attrition_rate:.1f}%", "Overall Turnover", "📉", "Alert", "danger", [90, 75, 60, 45, 30, 20])
+    render_kpi_card("Attrition Rate", f"{attrition_rate:.1f}%", "Overall Turnover", "📉", "Turnover", "danger", [90, 75, 60, 45, 30, 20])
 with k3:
-    render_kpi_card("Average Salary", f"${avg_salary:,.0f}", "Monthly Base", "💰", "+4.2%", "success", [40, 55, 60, 75, 85, 95])
+    render_kpi_card("Average Salary", f"${avg_salary:,.0f}", "Monthly Base", "💰", "Compensation", "success", [40, 55, 60, 75, 85, 95])
 with k4:
-    render_kpi_card("Departments", f"{depts}", "Active Units", "🏢", "R&D/Sales/HR", "purple", [70, 70, 70, 70, 70, 70])
+    render_kpi_card("Departments", f"{depts}", "Active Units", "🏢", "Divisions", "purple", [70, 70, 70, 70, 70, 70])
 with k5:
-    render_kpi_card("Average Age", f"{avg_age:.1f} yrs", "Demographics", "👤", "Stable", "cyan", [50, 52, 51, 53, 52, 54])
+    render_kpi_card("Average Age", f"{avg_age:.1f} yrs", "Demographics", "👤", "Age Profile", "cyan", [50, 52, 51, 53, 52, 54])
 with k6:
-    render_kpi_card("Retention Score", f"{retention_score:.1f}%", "Stability Score", "🛡️", "83.9% Target", "success", [60, 70, 75, 80, 82, 88])
+    render_kpi_card("Retention Score", f"{retention_score:.1f}%", "Stability Score", "🛡️", "Retention", "success", [60, 70, 75, 80, 82, 88])
 
-st.markdown("<br>", unsafe_allow_html=True)
+st.markdown('<div style="margin-bottom: 16px;"></div>', unsafe_allow_html=True)
 
 # ==========================================
 # DASHBOARD WIDGETS (PLOTLY CHARTS GRID)
@@ -125,52 +132,36 @@ render_section_header("Workforce Analytics Widgets", "Interactive Plotly visual 
 # Row 1: Department Attrition & Attrition Distribution
 c1, c2 = st.columns(2)
 with c1:
-    st.markdown('<div class="saas-card">', unsafe_allow_html=True)
     st.plotly_chart(plot_department_attrition(df), use_container_width=True)
-    st.markdown('</div>', unsafe_allow_html=True)
 
 with c2:
-    st.markdown('<div class="saas-card">', unsafe_allow_html=True)
     st.plotly_chart(plot_attrition_distribution(df), use_container_width=True)
-    st.markdown('</div>', unsafe_allow_html=True)
 
 # Row 2: Age Distribution & Monthly Income
 c3, c4 = st.columns(2)
 with c3:
-    st.markdown('<div class="saas-card">', unsafe_allow_html=True)
     st.plotly_chart(plot_age_distribution(df), use_container_width=True)
-    st.markdown('</div>', unsafe_allow_html=True)
 
 with c4:
-    st.markdown('<div class="saas-card">', unsafe_allow_html=True)
     st.plotly_chart(plot_income_distribution(df), use_container_width=True)
-    st.markdown('</div>', unsafe_allow_html=True)
 
 # Row 3: Job Role Attrition & Business Travel
 c5, c6 = st.columns(2)
 with c5:
-    st.markdown('<div class="saas-card">', unsafe_allow_html=True)
     st.plotly_chart(plot_job_role_attrition(df), use_container_width=True)
-    st.markdown('</div>', unsafe_allow_html=True)
 
 with c6:
-    st.markdown('<div class="saas-card">', unsafe_allow_html=True)
     st.plotly_chart(plot_business_travel_attrition(df), use_container_width=True)
-    st.markdown('</div>', unsafe_allow_html=True)
 
 # Row 4: Education Field & Promotion Analysis
 c7, c8 = st.columns(2)
 with c7:
-    st.markdown('<div class="saas-card">', unsafe_allow_html=True)
     st.plotly_chart(plot_education_field(df), use_container_width=True)
-    st.markdown('</div>', unsafe_allow_html=True)
 
 with c8:
-    st.markdown('<div class="saas-card">', unsafe_allow_html=True)
     st.plotly_chart(plot_promotion_delay_attrition(df), use_container_width=True)
-    st.markdown('</div>', unsafe_allow_html=True)
 
-st.markdown("<br>", unsafe_allow_html=True)
+st.markdown('<div style="margin-bottom: 16px;"></div>', unsafe_allow_html=True)
 
 # ==========================================
 # BUSINESS INSIGHT CARDS
@@ -219,7 +210,7 @@ with i2:
         "success"
     )
 
-st.markdown("<br>", unsafe_allow_html=True)
+st.markdown('<div style="margin-bottom: 16px;"></div>', unsafe_allow_html=True)
 
 # ==========================================
 # QUICK ACTIONS SECTION

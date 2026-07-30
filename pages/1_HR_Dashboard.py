@@ -62,75 +62,66 @@ if selected_ot != "All OverTime Status":
 if selected_role != "All Job Roles":
     df = df[df["JobRole"] == selected_role]
 
-st.markdown("<br>", unsafe_allow_html=True)
+st.markdown('<div style="margin-bottom: 16px;"></div>', unsafe_allow_html=True)
 
 # ==========================================
 # TOP KPI CARDS
 # ==========================================
-k1, k2, k3, k4 = st.columns(4)
+k1, k2, k3, k4, k5, k6 = st.columns(6)
 
 total_count = len(df)
-attr_count = (df["Attrition"] == "Yes").sum()
-attr_rate = (attr_count / total_count * 100) if total_count > 0 else 0
-avg_inc = df["MonthlyIncome"].mean() if total_count > 0 else 0
-avg_age = df["Age"].mean() if total_count > 0 else 0
+attr_count = int((df["Attrition"] == "Yes").sum())
+attr_rate = (attr_count / total_count * 100) if total_count > 0 else 0.0
+avg_inc = df["MonthlyIncome"].mean() if total_count > 0 else 0.0
+avg_age = df["Age"].mean() if total_count > 0 else 0.0
+retention_score = (100.0 - attr_rate) if total_count > 0 else 100.0
+dept_count = df["Department"].nunique() if total_count > 0 else 0
 
 with k1:
-    render_kpi_card("Filtered Workforce", f"{total_count:,}", "Active Records", "👥", "Dataset", "cyan")
+    render_kpi_card("Employee Count", f"{total_count:,}", "Active Records", "👥", "Total", "cyan")
 with k2:
     render_kpi_card("Attrition Rate", f"{attr_rate:.1f}%", f"{attr_count} Resigned", "📉", "Turnover", "danger" if attr_rate > 15 else "success")
 with k3:
-    render_kpi_card("Avg Monthly Income", f"${avg_inc:,.0f}", "Monthly Base", "💰", "Compensation", "purple")
+    render_kpi_card("Average Salary", f"${avg_inc:,.0f}", "Monthly Base", "💰", "Pay", "purple")
 with k4:
-    render_kpi_card("Average Age", f"{avg_age:.1f} yrs", "Employee Demographics", "👤", "Age Profile", "cyan")
+    render_kpi_card("Average Age", f"{avg_age:.1f} yrs", "Demographics", "👤", "Age", "cyan")
+with k5:
+    render_kpi_card("Retention Score", f"{retention_score:.1f}%", "Stability Score", "🛡️", "Retention", "success")
+with k6:
+    render_kpi_card("Departments", f"{dept_count}", "Active Units", "🏢", "Units", "purple")
 
-st.markdown("<br>", unsafe_allow_html=True)
+st.markdown('<div style="margin-bottom: 16px;"></div>', unsafe_allow_html=True)
 
 # ==========================================
 # CHARTS GRID SECTION 1
 # ==========================================
 c1, c2 = st.columns(2)
 with c1:
-    st.markdown('<div class="saas-card">', unsafe_allow_html=True)
     st.plotly_chart(plot_department_attrition(df), use_container_width=True)
-    st.markdown('</div>', unsafe_allow_html=True)
 
 with c2:
-    st.markdown('<div class="saas-card">', unsafe_allow_html=True)
     st.plotly_chart(plot_gender_donut(df), use_container_width=True)
-    st.markdown('</div>', unsafe_allow_html=True)
 
 c3, c4 = st.columns(2)
 with c3:
-    st.markdown('<div class="saas-card">', unsafe_allow_html=True)
     st.plotly_chart(plot_job_role_attrition(df), use_container_width=True)
-    st.markdown('</div>', unsafe_allow_html=True)
 
 with c4:
-    st.markdown('<div class="saas-card">', unsafe_allow_html=True)
     st.plotly_chart(plot_education_field(df), use_container_width=True)
-    st.markdown('</div>', unsafe_allow_html=True)
 
 # ==========================================
 # ATTRITION DRIVERS GRID
 # ==========================================
 render_section_header("Attrition Drivers & Satisfaction", "Correlating workload, work-life balance, and satisfaction with turnover", "KEY DRIVERS")
 
-d1, d2, d3 = st.columns(3)
+d1, d2 = st.columns(2)
 with d1:
-    st.markdown('<div class="saas-card">', unsafe_allow_html=True)
     st.plotly_chart(plot_overtime_attrition(df), use_container_width=True)
-    st.markdown('</div>', unsafe_allow_html=True)
 
 with d2:
-    st.markdown('<div class="saas-card">', unsafe_allow_html=True)
     st.plotly_chart(plot_work_life_balance(df), use_container_width=True)
-    st.markdown('</div>', unsafe_allow_html=True)
 
-with d3:
-    st.markdown('<div class="saas-card">', unsafe_allow_html=True)
-    st.plotly_chart(plot_job_satisfaction(df), use_container_width=True)
-    st.markdown('</div>', unsafe_allow_html=True)
+st.plotly_chart(plot_job_satisfaction(df), use_container_width=True)
 
 # ==========================================
 # NUMERICAL DISTRIBUTIONS
@@ -139,30 +130,20 @@ render_section_header("Demographics & Compensation Analysis", "Distribution curv
 
 n1, n2 = st.columns(2)
 with n1:
-    st.markdown('<div class="saas-card">', unsafe_allow_html=True)
     st.plotly_chart(plot_age_distribution(df), use_container_width=True)
-    st.markdown('</div>', unsafe_allow_html=True)
 
 with n2:
-    st.markdown('<div class="saas-card">', unsafe_allow_html=True)
     st.plotly_chart(plot_income_distribution(df), use_container_width=True)
-    st.markdown('</div>', unsafe_allow_html=True)
 
 n3, n4 = st.columns(2)
 with n3:
-    st.markdown('<div class="saas-card">', unsafe_allow_html=True)
     st.plotly_chart(plot_years_at_company(df), use_container_width=True)
-    st.markdown('</div>', unsafe_allow_html=True)
 
 with n4:
-    st.markdown('<div class="saas-card">', unsafe_allow_html=True)
     st.plotly_chart(plot_income_by_dept(df), use_container_width=True)
-    st.markdown('</div>', unsafe_allow_html=True)
 
 # Heatmap
-st.markdown('<div class="saas-card">', unsafe_allow_html=True)
 st.plotly_chart(plot_correlation_matrix(df), use_container_width=True)
-st.markdown('</div>', unsafe_allow_html=True)
 
 # ==========================================
 # EXECUTIVE OBSERVATION & RECOMMENDATIONS

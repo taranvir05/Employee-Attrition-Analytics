@@ -1,4 +1,5 @@
 import streamlit as st
+from utils.model_loader import get_model_display_name, get_model_metadata
 
 def render_sidebar():
     """
@@ -36,9 +37,12 @@ def render_sidebar():
 
         st.markdown("<br>", unsafe_allow_html=True)
 
-        # Model Snapshot Card in Sidebar
+        # Model Snapshot Card in Sidebar — fully dynamic from artifact
+        _meta = get_model_metadata()
+        _model_name = _meta["model_name"]
+        _modified   = _meta["last_modified"]
         st.markdown(
-            """
+            f"""
             <div style="padding: 14px; border-radius: 14px; background: rgba(30, 41, 59, 0.5); border: 1px solid rgba(255,255,255,0.07); font-size: 0.8rem; margin-bottom: 16px;">
                 <div style="color: #ffffff; font-weight: 700; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
                     <span>🤖 Engine Specifications</span>
@@ -47,11 +51,7 @@ def render_sidebar():
                 <div style="display: flex; flex-direction: column; gap: 6px; color: #94a3b8; font-size: 0.78rem;">
                     <div style="display: flex; justify-content: space-between;">
                         <span>Model:</span>
-                        <span style="color: #38bdf8; font-weight: 600;">Random Forest</span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between;">
-                        <span>Accuracy:</span>
-                        <span style="color: #4ade80; font-weight: 700;">92.4%</span>
+                        <span style="color: #38bdf8; font-weight: 600;">{_model_name}</span>
                     </div>
                     <div style="display: flex; justify-content: space-between;">
                         <span>Explainability:</span>
@@ -61,20 +61,25 @@ def render_sidebar():
                         <span>Dataset:</span>
                         <span style="color: #cbd5e1; font-weight: 600;">1,470 Records</span>
                     </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>Updated:</span>
+                        <span style="color: #64748b; font-weight: 500; font-size: 0.72rem;">{_modified}</span>
+                    </div>
                 </div>
             </div>
             """,
             unsafe_allow_html=True
         )
 
-        # Premium Footer Badges Widget
+        # Premium Footer Badges Widget — model name from artifact
+        _badge_model = get_model_display_name()
         st.markdown(
-            """
+            f"""
             <div style="padding: 14px; border-radius: 14px; background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(56, 189, 248, 0.2); font-size: 0.78rem; text-align: center;">
                 <div style="font-weight: 800; color: #ffffff; font-size: 0.85rem; margin-bottom: 2px;">PulseHR AI</div>
                 <div style="color: #94a3b8; font-size: 0.72rem; margin-bottom: 10px;">Attrition Intelligence Platform</div>
                 <div style="display: flex; gap: 4px; justify-content: center; flex-wrap: wrap;">
-                    <span class="badge-pill badge-cyan" style="font-size: 0.68rem; padding: 2px 8px;">Random Forest</span>
+                    <span class="badge-pill badge-cyan" style="font-size: 0.68rem; padding: 2px 8px;">{_badge_model}</span>
                     <span class="badge-pill badge-purple" style="font-size: 0.68rem; padding: 2px 8px;">SHAP Enabled</span>
                     <span class="badge-pill badge-success" style="font-size: 0.68rem; padding: 2px 8px;">Version 2.4</span>
                 </div>
@@ -129,10 +134,19 @@ def render_section_header(title, subtitle="", badge=""):
         unsafe_allow_html=True
     )
 
-def render_insight_card(icon, title, text, category="warning"):
+def render_insight_card(icon, title, text, detail_or_category="", category="warning"):
     """
     Renders a single-sentence executive insight card with colored left border.
+    Accepts either 4 args (icon, title, text, category) or
+    5 args (icon, title, text, detail, category) for backward compatibility.
     """
+    # Handle both 4-arg and 5-arg call signatures
+    if detail_or_category in ("danger", "warning", "success", "info", "purple", ""):
+        detail = ""
+        category = detail_or_category if detail_or_category else "warning"
+    else:
+        detail = detail_or_category
+        # category is already set from the 5th arg
     border_colors = {
         "danger": "#ef4444",
         "warning": "#f59e0b",
@@ -142,6 +156,7 @@ def render_insight_card(icon, title, text, category="warning"):
     }
     color = border_colors.get(category, "#38bdf8")
     
+    detail_html = f'<p style="color: #94a3b8; font-size: 0.82rem; margin: 6px 0 0 0; line-height: 1.5;">{detail}</p>' if detail else ""
     st.markdown(
         f"""
         <div style="background: rgba(15, 23, 42, 0.75); border-left: 4px solid {color}; border-radius: 14px; padding: 18px 20px; margin-bottom: 14px; border-top: 1px solid rgba(255,255,255,0.06); border-right: 1px solid rgba(255,255,255,0.06); border-bottom: 1px solid rgba(255,255,255,0.06); transition: all 0.25s ease;" class="saas-card">
@@ -150,6 +165,7 @@ def render_insight_card(icon, title, text, category="warning"):
                 <h4 style="color: #ffffff; font-size: 1.05rem; font-weight: 700; margin: 0;">{title}</h4>
             </div>
             <p style="color: #cbd5e1; font-size: 0.88rem; margin: 0; line-height: 1.5; font-weight: 500;">{text}</p>
+            {detail_html}
         </div>
         """,
         unsafe_allow_html=True

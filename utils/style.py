@@ -36,27 +36,51 @@ def load_css():
             max-width: 1380px !important;
         }
 
-        /* Remove ALL Top Padding and Space above Left Sidebar */
-        [data-testid="stSidebar"] {
+        /* --- SIDEBAR TOP SPACING RESET --- */
+        section[data-testid="stSidebar"] {
             background-color: rgba(15, 23, 42, 0.95) !important;
             border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
             backdrop-filter: blur(16px);
-            padding-top: 0rem !important;
-            margin-top: 0rem !important;
+            padding-top: 0 !important;
+            margin-top: 0 !important;
         }
-        [data-testid="stSidebarContent"] {
-            padding-top: 0rem !important;
-            margin-top: 0rem !important;
+
+        /* Hide header/collapse button container completely */
+        [data-testid="stSidebarHeader"],
+        [data-testid="stSidebarCollapseButton"],
+        header[data-testid="stHeader"] {
+            display: none !important;
+            height: 0 !important;
+            min-height: 0 !important;
+            max-height: 0 !important;
+            padding: 0 !important;
+            margin: 0 !important;
         }
+
+        /* Remove top padding & margins from all inner sidebar wrappers */
+        [data-testid="stSidebarContent"],
+        section[data-testid="stSidebar"] > div,
+        section[data-testid="stSidebar"] > div > div {
+            padding-top: 0 !important;
+            margin-top: 0 !important;
+        }
+
+        /* Target sidebar user content container and first child elements */
         [data-testid="stSidebarUserContent"] {
-            padding-top: 0.5rem !important;
+            padding-top: 10px !important;
             padding-bottom: 1rem !important;
-            margin-top: 0rem !important;
+            margin-top: 0 !important;
         }
-        section[data-testid="stSidebar"] > div {
-            padding-top: 0rem !important;
-            margin-top: 0rem !important;
+
+        [data-testid="stSidebarUserContent"] > div,
+        [data-testid="stSidebarUserContent"] [data-testid="stVerticalBlock"],
+        [data-testid="stSidebarUserContent"] [data-testid="stVerticalBlock"] > div:first-child,
+        [data-testid="stSidebarUserContent"] [data-testid="stElementContainer"]:first-child,
+        [data-testid="stSidebarUserContent"] [data-testid="stMarkdownContainer"]:first-child {
+            padding-top: 0 !important;
+            margin-top: 0 !important;
         }
+
         [data-testid="stSidebar"] [data-testid="stMarkdownContainer"] p {
             color: #94a3b8;
             font-size: 0.88rem;
@@ -108,12 +132,28 @@ def load_css():
             transform: translateY(-2px);
         }
 
+        /* Automatic SaaS Card Styling for Plotly Charts */
+        [data-testid="stPlotlyChart"] {
+            background: rgba(15, 23, 42, 0.75) !important;
+            border: 1px solid rgba(255, 255, 255, 0.09) !important;
+            border-radius: 16px !important;
+            padding: 12px !important;
+            margin-bottom: 12px !important;
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5) !important;
+            backdrop-filter: blur(12px) !important;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        }
+        [data-testid="stPlotlyChart"]:hover {
+            border-color: rgba(56, 189, 248, 0.35) !important;
+            box-shadow: 0 14px 35px -10px rgba(14, 165, 233, 0.2) !important;
+        }
+
         /* KPI Cards */
         .kpi-card {
             background: linear-gradient(145deg, rgba(30, 41, 59, 0.6) 0%, rgba(15, 23, 42, 0.85) 100%);
             border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 16px;
-            padding: 18px 20px;
+            padding: 14px 14px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
             transition: all 0.3s ease;
             position: relative;
@@ -124,38 +164,46 @@ def load_css():
             box-shadow: 0 12px 28px rgba(14, 165, 233, 0.25);
         }
         .kpi-icon-wrapper {
-            width: 42px;
-            height: 42px;
-            border-radius: 12px;
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.3rem;
-            margin-bottom: 10px;
+            font-size: 1.15rem;
+            margin-bottom: 8px;
             background: rgba(56, 189, 248, 0.12);
             color: #38bdf8;
             border: 1px solid rgba(56, 189, 248, 0.25);
         }
         .kpi-title {
             color: #94a3b8;
-            font-size: 0.8rem;
+            font-size: 0.74rem;
             font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.04em;
             margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         .kpi-value {
             color: #ffffff;
-            font-size: 1.75rem;
+            font-size: 1.4rem;
             font-weight: 800;
             letter-spacing: -0.02em;
             line-height: 1.2;
+            word-break: break-word;
+            overflow-wrap: break-word;
         }
         .kpi-subtitle {
-            font-size: 0.75rem;
+            font-size: 0.72rem;
             margin-top: 4px;
             color: #38bdf8;
             font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         /* Mini sparkline bar graphic for KPI cards */
@@ -215,13 +263,14 @@ def load_css():
         .badge-pill {
             display: inline-flex;
             align-items: center;
-            gap: 6px;
-            padding: 4px 12px;
+            gap: 4px;
+            padding: 3px 8px;
             border-radius: 9999px;
-            font-size: 0.75rem;
+            font-size: 0.68rem;
             font-weight: 700;
-            letter-spacing: 0.03em;
+            letter-spacing: 0.02em;
             text-transform: uppercase;
+            white-space: nowrap;
         }
         .badge-cyan {
             background: rgba(56, 189, 248, 0.15);
@@ -257,13 +306,47 @@ def load_css():
             font-weight: 800;
         }
 
-        /* Glowing Accent Divider */
+        /* Clean Subtle Divider */
         .glow-divider {
-            height: 2px;
+            height: 1px;
             width: 100%;
-            background: linear-gradient(90deg, rgba(56, 189, 248, 0) 0%, rgba(56, 189, 248, 0.6) 50%, rgba(139, 92, 246, 0) 100%);
-            margin: 20px 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            margin: 16px 0;
         }
+
+        /* ── Suppress empty <br> spacer containers ─────────────
+           Streamlit wraps every st.markdown() call in a stMarkdownContainer
+           div. When the only content is a <br> tag the div renders as a
+           visible blank bar.  We detect those containers and collapse them.  */
+        [data-testid="stMarkdownContainer"]:has(> br:only-child) {
+            display: none !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            height: 0 !important;
+            min-height: 0 !important;
+        }
+        /* Collapse the wrapping stElementContainer */
+        [data-testid="stElementContainer"]:has(
+            [data-testid="stMarkdownContainer"] > br:only-child
+        ) {
+            display: none !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            height: 0 !important;
+            min-height: 0 !important;
+        }
+        /* Collapse the outer vertical block wrapper */
+        [data-testid="stVerticalBlockBorderWrapper"]:has(
+            [data-testid="stMarkdownContainer"] > br:only-child
+        ) {
+            display: none !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            height: 0 !important;
+            min-height: 0 !important;
+        }
+        /* Utility: section gap replacement instead of <br> */
+        .section-gap { margin-top: 20px; }
 
         /* Custom Scrollbar */
         ::-webkit-scrollbar {

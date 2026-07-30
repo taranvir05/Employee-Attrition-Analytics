@@ -1,9 +1,9 @@
 import streamlit as st
 import pandas as pd
-import joblib
 import numpy as np
 from utils.style import load_css
 from utils.helpers import render_sidebar, render_section_header, render_footer
+from utils.model_loader import get_model_assets, get_model_display_name
 
 st.set_page_config(
     page_title="Predict Attrition - PulseHR",
@@ -14,15 +14,8 @@ st.set_page_config(
 load_css()
 render_sidebar()
 
-# Model Loading (Preserving exact backend logic)
-@st.cache_resource
-def load_ml_assets():
-    model = joblib.load("models/best_model.pkl")
-    scaler = joblib.load("models/scaler.pkl")
-    feature_names = joblib.load("models/feature_names.pkl")
-    return model, scaler, feature_names
-
-model, scaler, feature_names = load_ml_assets()
+# Model Loading — timestamp-aware cache via model_loader
+model, scaler, feature_names = get_model_assets()
 
 render_section_header(
     "Employee Attrition Prediction Studio",
@@ -36,11 +29,21 @@ render_section_header(
 col_form, col_result = st.columns([1.1, 1])
 
 with col_form:
-    st.markdown('<div class="saas-card">', unsafe_allow_html=True)
-    st.markdown('<h3 style="color: #ffffff; font-size: 1.15rem; font-weight: 700; margin-top:0;">👤 Employee Data Entry Form</h3>', unsafe_allow_html=True)
-    
+    st.markdown(
+        """
+        <div style="background: rgba(15,23,42,0.75); border: 1px solid rgba(255,255,255,0.09);
+                    border-radius: 16px; padding: 18px 20px 0 20px; margin-bottom: 4px;
+                    box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5); backdrop-filter: blur(12px);">
+            <h3 style="color: #ffffff; font-size: 1.15rem; font-weight: 700; margin-top:0; margin-bottom: 12px;">
+                👤 Employee Data Entry Form
+            </h3>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
     tab1, tab2, tab3, tab4 = st.tabs(["Profile & Edu", "Job & Role", "Satisfaction", "Tenure & Pay"])
-    
+
     with tab1:
         c1, c2 = st.columns(2)
         with c1:
@@ -94,14 +97,14 @@ with col_form:
             years_current_role = st.slider("Years in Current Role", 0, 20, 3)
             years_with_manager = st.slider("Years with Current Manager", 0, 20, 4)
 
-    st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown('<div style="margin-top: 18px;"></div>', unsafe_allow_html=True)
     predict_button = st.button("⚡ Run ML Prediction Analysis", key="btn_run_pred")
-    st.markdown('</div>', unsafe_allow_html=True)
 
 with col_result:
     if not predict_button:
+        _pred_model_name = get_model_display_name()
         st.markdown(
-            """
+            f"""
             <div class="saas-card" style="text-align: center; padding: 60px 20px; border: 2px dashed rgba(56, 189, 248, 0.2);">
                 <div style="font-size: 3rem; margin-bottom: 12px; opacity: 0.8;">🧠</div>
                 <h3 style="color: #ffffff; font-size: 1.25rem; font-weight: 700; margin-bottom: 8px;">Awaiting Input Parameters</h3>
@@ -109,7 +112,7 @@ with col_result:
                     Adjust the employee profile form on the left and click <b>"Run ML Prediction Analysis"</b> to generate real-time risk assessment.
                 </p>
                 <div style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;">
-                    <span class="badge-pill badge-cyan">Random Forest</span>
+                    <span class="badge-pill badge-cyan">{_pred_model_name}</span>
                     <span class="badge-pill badge-purple">SHAP Factor Analysis</span>
                 </div>
             </div>
@@ -122,6 +125,9 @@ with col_result:
         # ==========================================
         input_df = pd.DataFrame({
             "Age": [age],
+            "DailyRate": [802],
+            "HourlyRate": [66],
+            "MonthlyRate": [14235],
             "Gender": [gender],
             "MaritalStatus": [marital_status],
             "Education": [education],
@@ -159,7 +165,7 @@ with col_result:
 
         input_df["ExperienceGroup"] = pd.cut(
             input_df["TotalWorkingYears"],
-            bins=[0, 5, 10, 20, 40],
+            bins=[-1, 5, 10, 20, 40],
             labels=["Early Career", "Mid Career", "Senior", "Highly Experienced"]
         )
 
@@ -171,7 +177,7 @@ with col_result:
 
         input_df["DistanceCategory"] = pd.cut(
             input_df["DistanceFromHome"],
-            bins=[0, 5, 15, 30],
+            bins=[-1, 5, 15, 30],
             labels=["Near", "Moderate", "Far"]
         )
 
@@ -184,7 +190,7 @@ with col_result:
 
         input_df["TenureGroup"] = pd.cut(
             input_df["YearsAtCompany"],
-            bins=[0, 2, 5, 10, 40],
+            bins=[-1, 2, 5, 10, 40],
             labels=["New", "Junior", "Experienced", "Veteran"]
         )
 
@@ -206,6 +212,17 @@ with col_result:
         prediction = model.predict(input_scaled)[0]
         probability = model.predict_proba(input_scaled)[0][1]
         confidence = max(probability, 1 - probability)
+
+        # Calculate exact linear SHAP / log-odds feature contributions for this employee profile
+        contributions = input_scaled.values[0] * model.coef_[0]
+        contrib_df = pd.DataFrame({
+            "Feature": feature_names,
+            "Contribution": contributions,
+            "AbsContrib": np.abs(contributions)
+        }).sort_values(by="AbsContrib", ascending=False)
+        
+        top_risk_drivers = contrib_df[contrib_df["Contribution"] > 0].head(3)
+        top_retention_drivers = contrib_df[contrib_df["Contribution"] < 0].head(3)
 
         # ==========================================
         # RENDER PREDICTION DASHBOARD CARD
@@ -233,28 +250,31 @@ with col_result:
 
         st.progress(float(probability))
 
-        # Risk breakdown factors
+        # Dynamic Model-Derived Risk Factor Assessment
+        risk_rows = ""
+        for _, r in top_risk_drivers.iterrows():
+            feat_clean = r['Feature'].replace('_', ' ')
+            risk_rows += f"""
+            <div style="display: flex; justify-content: space-between;">
+                <span style="color: #cbd5e1;">{feat_clean}:</span>
+                <span style="font-weight: 700; color: #ef4444;">+{r['Contribution']:.3f} log-odds</span>
+            </div>
+            """
+        for _, r in top_retention_drivers.iterrows():
+            feat_clean = r['Feature'].replace('_', ' ')
+            risk_rows += f"""
+            <div style="display: flex; justify-content: space-between;">
+                <span style="color: #cbd5e1;">{feat_clean}:</span>
+                <span style="font-weight: 700; color: #4ade80;">{r['Contribution']:.3f} log-odds</span>
+            </div>
+            """
+
         st.markdown(
             f"""
             <div style="margin-top: 24px; padding: 16px; background: rgba(30, 41, 59, 0.6); border-radius: 12px; border: 1px solid rgba(255,255,255,0.06);">
-                <div style="color: #ffffff; font-weight: 700; font-size: 0.9rem; margin-bottom: 10px;">🔍 Top Risk Factor Assessment</div>
+                <div style="color: #ffffff; font-weight: 700; font-size: 0.9rem; margin-bottom: 10px;">🔍 Model-Derived Top Feature Drivers</div>
                 <div style="display: flex; flex-direction: column; gap: 8px; font-size: 0.82rem;">
-                    <div style="display: flex; justify-content: space-between;">
-                        <span style="color: #cbd5e1;">OverTime Status:</span>
-                        <span style="font-weight: 700; color: {'#ef4444' if overtime == 'Yes' else '#4ade80'};">{overtime}</span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between;">
-                        <span style="color: #cbd5e1;">Job Satisfaction Level:</span>
-                        <span style="font-weight: 700; color: {'#ef4444' if job_satisfaction <= 2 else '#4ade80'};">{job_satisfaction} / 4</span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between;">
-                        <span style="color: #cbd5e1;">Work-Life Balance Level:</span>
-                        <span style="font-weight: 700; color: {'#ef4444' if work_life_balance <= 2 else '#4ade80'};">{work_life_balance} / 4</span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between;">
-                        <span style="color: #cbd5e1;">Years Since Last Promotion:</span>
-                        <span style="font-weight: 700; color: {'#f59e0b' if years_promotion >= 4 else '#38bdf8'};">{years_promotion} yrs</span>
-                    </div>
+                    {risk_rows}
                 </div>
             </div>
             """,
@@ -274,8 +294,6 @@ with col_result:
             """,
             unsafe_allow_html=True
         )
-
-        st.markdown("<br>", unsafe_allow_html=True)
 
         # Download PDF/TXT Report
         report_txt = f"""PULSEHR ATTRITION PREDICTION REPORT
