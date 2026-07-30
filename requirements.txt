@@ -2,13 +2,11 @@ streamlit
 pandas
 numpy
 scikit-learn
+scipy
 matplotlib
 plotly
 seaborn
 shap
 joblib
-pillow
+Pillow
 reportlab
-scipy
-requests
-openpyxl
