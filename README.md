@@ -106,7 +106,11 @@ The landing dashboard provides a quick overview of workforce health, key HR metr
 ### 📊 HR Analytics Dashboard
 Interactive workforce analytics with filters and visualizations covering department attrition, overtime impact, job-role patterns, work-life balance, and other key HR indicators.
 
-![HR Analytics Dashboard](images/hr_dashboard.png)(images/hr_dashboard2.png)(images/hr_dashboard3.png)
+![HR Dashboard](images/hr_dashboard.png)
+
+![HR Dashboard](images/hr_dashboard2.png)
+
+![HR Dashboard](images/hr_dashboard3.png)
 
 ---
 
